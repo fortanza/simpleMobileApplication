@@ -10,11 +10,14 @@ import {
 
 export default function App() {
   const [text, onChangeText] = React.useState('Quoi de neuf?');
+  const HandlerChangeValue = (e) => {
+    onChangeText(e.target.value);
+  };
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        onChangeText={onChangeText}
+        onChangeText={HandlerChangeValue}
         value={text}
         placeholder='Quoi de neuf ?'
         placeholderTextColor='#d2d7d3'
