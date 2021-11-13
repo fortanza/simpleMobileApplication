@@ -1,35 +1,70 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
+// import axios from 'axios';
 import {
+  KeyboardAvoidingView,
   StyleSheet,
   Text,
   View,
   TextInput,
   TouchableOpacity,
+  Keyboard,
 } from 'react-native';
+import WhatNew from './Components/WhatNew/WhatNew';
 
 export default function App() {
-  const [text, onChangeText] = React.useState('Quoi de neuf?');
-  const HandlerChangeValue = (e) => {
-    onChangeText(e.target.value);
+  const [needle, setNeedle] = useState();
+  const [newsItems, setNewsItems] = useState([]);
+  // const [img, setImg] = useState([]);
+
+  const handleAddNew = () => {
+    Keyboard.dismiss();
+    setNewsItems([...newsItems, needle]);
   };
+
+  // const generateApi = () => {
+  //   axios
+  //     .get(`https://coffee.alexflipnote.dev/random.json`)
+  //     .then(({ data }) => {
+  //       setImg(data.file);
+  //     })
+  //     .catch(() => {
+  //       console.error('Plz fix your call, or set up your internet');
+  //     });
+  // };
+
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        onChangeText={HandlerChangeValue}
-        value={text}
-        placeholder='Quoi de neuf ?'
-        placeholderTextColor='#d2d7d3'
-      />
-      <TouchableOpacity>
-        <View style={styles.addLayout}>
-          <View style={styles.addWrapper}>
-            <Text style={styles.addText}>Publier</Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.writeTaskWrapper}
+      >
+        <TextInput
+          style={styles.input}
+          onChangeText={(needle) => setNeedle(needle)}
+          value={needle}
+          placeholder={'Quoi de neuf ?'}
+          placeholderTextColor='#d2d7d3'
+        />
+
+        <TouchableOpacity onPress={() => handleAddNew()}>
+          <View style={styles.addLayout}>
+            <View style={styles.addWrapper}>
+              <Text style={styles.addText}>Publier</Text>
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
-      <StatusBar style='auto' />
+        </TouchableOpacity>
+        <StatusBar style='auto' />
+      </KeyboardAvoidingView>
+      <View>
+        {newsItems.map((news) => {
+          return (
+            <TouchableOpacity>
+              <WhatNew text={news} />
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 }
