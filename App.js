@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -9,35 +9,40 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
+  ScrollView,
 } from 'react-native';
 import WhatNew from './Components/WhatNew/WhatNew';
 
 export default function App() {
   const [needle, setNeedle] = useState();
+  const [img, setImg] = useState(
+    'https://coffee.alexflipnote.dev/3IW0FOR3MFE_coffee.jpg'
+  );
   const [newsItems, setNewsItems] = useState([]);
-  // const [img, setImg] = useState([]);
 
   const handleAddNew = () => {
     Keyboard.dismiss();
-    setNewsItems([...newsItems, needle]);
+    handleGenerateImg();
+    const whatsNews = { text: needle, image: img };
+    setNewsItems([...newsItems, whatsNews]);
+    setNeedle(null);
   };
 
-  // const generateApi = () => {
-  //   axios
-  //     .get(`https://coffee.alexflipnote.dev/random.json`)
-  //     .then(({ data }) => {
-  //       setImg(data.file);
-  //     })
-  //     .catch(() => {
-  //       console.error('Plz fix your call, or set up your internet');
-  //     });
-  // };
+  const handleGenerateImg = () => {
+    axios
+      .get(`https://coffee.alexflipnote.dev/random.json`)
+      .then(({ data }) => {
+        setImg(data.file);
+      })
+      .catch(() => {
+        console.error('Plz fix your call, or set up your internet');
+      });
+  };
 
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.writeTaskWrapper}
       >
         <TextInput
           style={styles.input}
@@ -56,15 +61,19 @@ export default function App() {
         </TouchableOpacity>
         <StatusBar style='auto' />
       </KeyboardAvoidingView>
-      <View>
-        {newsItems.map((news) => {
-          return (
-            <TouchableOpacity>
-              <WhatNew text={news} />
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
+        keyboardShouldPersistTaps='handled'
+      >
+        <View>
+          {newsItems.map((news, index) => {
+            return <WhatNew key={index} text={news.text} image={news.image} />;
+          })}
+        </View>
+      </ScrollView>
     </View>
   );
 }
